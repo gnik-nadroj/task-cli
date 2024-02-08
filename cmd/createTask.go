@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"strings"
+	"net/rpc/jsonrpc"
 
 	"github.com/spf13/cobra"
 )
@@ -14,7 +14,21 @@ var createCmd = &cobra.Command{
     Args: cobra.MinimumNArgs(2),
 
     Run: func(cmd *cobra.Command, args []string) {
-      fmt.Println("Create: " + strings.Join(args, " "))
+      client, err := jsonrpc.Dial("tcp", "localhost:1234")
+      if err != nil {
+        fmt.Println("Error connecting to RPC server:", err)
+        return
+      }
+      defer client.Close()
+
+      var reply int
+      err = client.Call("TaskService.CreateTask", , &reply)
+      if err != nil {
+        fmt.Println("Error calling RPC method:", err)
+        return
+      }
+
+      fmt.Println("Result:", reply)
     },
 }
 
